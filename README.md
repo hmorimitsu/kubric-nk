@@ -1,73 +1,101 @@
-# Kubric
+# Kubric-NK
 
-[![Blender](https://github.com/google-research/kubric/actions/workflows/blender.yml/badge.svg?branch=main)](https://github.com/google-research/kubric/actions/workflows/blender.yml)
-[![Kubruntu](https://github.com/google-research/kubric/actions/workflows/kubruntu.yml/badge.svg?branch=main)](https://github.com/google-research/kubric/actions/workflows/kubruntu.yml)
-[![Test](https://github.com/google-research/kubric/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/google-research/kubric/actions/workflows/test.yml)
-[![Coverage](https://badgen.net/codecov/c/github/google-research/kubric)](https://codecov.io/github/google-research/kubric)
-[![Docs](https://readthedocs.org/projects/kubric/badge/?version=latest)](https://kubric.readthedocs.io/en/latest/)
+This repository is a fork of Kubric ([https://github.com/google-research/kubric](https://github.com/google-research/kubric)) containing code to generate the Kubric-NK dataset.
 
-A data generation pipeline for creating semi-realistic synthetic multi-object 
-videos with rich annotations such as instance segmentation masks, depth maps, 
-and optical flow.
+The Kubric-NK dataset was presented in our paper:
 
-![](docs/images/teaser.gif)
+> DPFlow: Adaptive Optical Flow Estimation with a Dual-Pyramid Framework. Henrique Morimitsu, Xiaobin Zhu, Roberto M. Cesar-Jr, Xiangyang Ji, and Xu-Cheng Yin. CVPR 2025
 
+The code for the DPFlow optical flow model is available as part of PTLFlow at [https://github.com/hmorimitsu/ptlflow/tree/main/ptlflow/models/dpflow](https://github.com/hmorimitsu/ptlflow/tree/main/ptlflow/models/dpflow).
 
-## Motivation and design
-We need better data for training and evaluating machine learning systems, especially in the context of unsupervised multi-object video understanding.
-Current systems succeed on [toy datasets](https://github.com/deepmind/multi_object_datasets), but fail on real-world data.
-Progress could be greatly accelerated if we had the ability to create suitable datasets of varying complexity on demand.
-Kubric is mainly built on-top of pybullet (for physics simulation) and Blender (for rendering); however, the code is kept modular to potentially support different rendering backends.
+## Usage
 
-## Getting started
-For instructions, please refer to [https://kubric.readthedocs.io](https://kubric.readthedocs.io)
+There are two main ways of using Kubric-NK:
 
-Assuming you have docker installed, to generate the data above simply execute:
-```
-git clone https://github.com/google-research/kubric.git
-cd kubric
-docker pull kubricdockerhub/kubruntu
-docker run --rm --interactive \
-           --user $(id -u):$(id -g) \
-           --volume "$(pwd):/kubric" \
-           kubricdockerhub/kubruntu \
-           /usr/bin/python3 examples/helloworld.py
-ls output
+1. Generation: if you want to render the dataset samples by yourself, or modify the generation process to render different samples. Read the instructions at [1. Data Generation](#1-data-generation).
+2. Download: if you just want to use Kubric-NK's samples to evaluate your method. Read the instructions at [2. Downloading](#2-downloading).
+
+## 1. Data Generation
+
+1. install [Docker](https://www.docker.com/).
+
+2. Run the command:
+
+```bash
+bash generate_kubric_nk.sh
 ```
 
-Kubric employs **Blender 2.93** (see [here](https://github.com/google-research/kubric/blob/01a08d274234f32f2adc4f7d5666b39490f953ad/docker/Blender.Dockerfile#L48)), so if you want to inspect the generated `*.blend` scene file for interactive inspection (i.e. without needing to render the scene), please make sure you have installed the correct Blender version. 
+By default, this script will generate the optical flow samples for at 1k resolution only. You can open the script and follow the instructions there to generate other samples.
 
-## Requirements
-- A pipeline for conveniently generating video data. 
-- Physics simulation for automatically generating physical interactions between multiple objects.
-- Good control over the complexity of the generated data, so that we can evaluate individual aspects such as variability of objects and textures.
-- Realism: Ideally, the ability to span the entire complexity range from CLEVR all the way to real-world video such as YouTube8. This is clearly not feasible, but we would like to get as close as possible. 
-- Access to rich ground truth information about the objects in a scene for the purpose of evaluation (eg. object segmentations and properties)
-- Control the train/test split to evaluate compositionality and systematic generalization (for example on held-out combinations of features or objects)
+If you want to modify the generation process entirely, then you can modify the script [challenges/movi/movi_def_worker.py](challenges/movi/movi_def_worker.py).
 
+You can also modify the configuration files in the folder `configs_kubric_nk` to change the scene conditions for each sequence.
 
-## Challenges and datasets
-Generally, we store datasets for the challenges in this [Google Cloud Bucket](https://console.cloud.google.com/storage/browser/kubric-public).
-More specifically, these challenges are *dataset contributions* of the Kubric CVPR'22 paper:
-* [MOVi: Multi-Object Video](challenges/movi)
-* [Texture-Structure in NeRF](challenges/texture_structure_nerf)
-* [Optical Flow](challenges/optical_flow)
-* [Pre-training Visual Representations](challenges/pretraining_visual)
-* [Robust NeRF](challenges/robust_nerf)
-* [Multi-View Object Matting](challenges/multiview_matting)
-* [Complex BRDFs](challenges/complex_brdf)
-* [Single View Reconstruction](challenges/single_view_reconstruction)
-* [Video Based Reconstruction](challenges/video_based_reconstruction)
-* [Point Tracking](challenges/point_tracking)
+## 2. Downloading
 
-Pointers to additional datasets/workers:
-* [ToyBox (from Neural Semantic Fields)](https://nesf3d.github.io)
-* [MultiShapeNet (from Scene Representation Transformer)](https://srt-paper.github.io)
-* [SyntheticTrio(from Controllable Neural Radiance Fields)](https://github.com/kacperkan/conerf-kubric-dataset#readme)
+If you just want to use the Kubric-NK samples to evaluate a model, you can download them from one of the servers below.
 
-## Bibtex
+### Online servers:
+
+Google Drive: https://drive.google.com/drive/folders/1vSShkqyYwLJYX38iJP3kg6x-DMpCn0R6?usp=sharing
+
+Baidu Cloud: https://pan.baidu.com/s/1sR_uX-yTMXORfLf_FU4opQ (password: `kbnk`)
+
+**IMPORTANT:** Some files are HUGE and you only need to download a few of them, depending on the application. See the instructions below to know which files to download.
+
+### Explanation of file contents
+
+The files containing visual samples follow this naming pattern `<sample_type>_<resolution>.zip`.
+
+The following `<sample_type>` are available:
+
+- `rgba`: input images
+- `config`: calibration data for calculating the groundtruth
+- `backward_flow`
+- `depth`
+- `forward_flow`
+- `normal`
+- `object_coordinates`
+
+The `rgba` and `config` files are required, while the others depend on the desired type of annotation for the task.
+
+If you want to replicate the Kubric-NK evaluation for optical flow estimation, then follow these steps:
+
+1. download all `rgba*`, `config*`, and `forward_flow*` files.
+2. unzip them according to the following folder structure:
 ```
-@article{greff2021kubric,
+kubric-nk
+├── 1k
+|   ├── 000
+|   |   ├── config.json
+|   |   ├── forward_flow_00000.png
+|   |   ├── forward_flow_00001.png
+|   |   ├── ...
+|   |   ├── rgba_00000.png
+|   |   ├── ...
+|   ├── 001
+|   ...
+├── 2k
+...
+```
+
+
+
+## Citation
+
+If you use Kubric-NK, please consider citing the following papers:
+
+```
+@InProceedings{Morimitsu2025DPFlow,
+  author    = {Morimitsu, Henrique and Zhu, Xiaobin and Cesar-Jr., Roberto M. and Ji, Xiangyang and Yin, Xu-Cheng},
+  booktitle = {The IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  title     = {{DPFlow}: Adaptive Optical Flow Estimation with a Dual-Pyramid Framework},
+  year      = {2025},
+}
+```
+
+```
+@InProceedings{greff2021kubric,
     title = {Kubric: a scalable dataset generator}, 
     author = {Klaus Greff and Francois Belletti and Lucas Beyer and Carl Doersch and
               Yilun Du and Daniel Duckworth and David J Fleet and Dan Gnanapragasam and
@@ -77,10 +105,12 @@ Pointers to additional datasets/workers:
               Noha Radwan and Daniel Rebain and Sara Sabour and Mehdi S. M. Sajjadi and Matan Sela and
               Vincent Sitzmann and Austin Stone and Deqing Sun and Suhani Vora and Ziyu Wang and
               Tianhao Wu and Kwang Moo Yi and Fangcheng Zhong and Andrea Tagliasacchi},
-    booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+    booktitle = {The IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
     year = {2022},
 }
 ```
 
+
 ## Disclaimer
-This is not an official Google Product
+
+The code and assets are based on [Kubric](https://github.com/google-research/kubric). Kubric-NK, however, is not related to Google in any way.
