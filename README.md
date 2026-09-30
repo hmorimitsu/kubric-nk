@@ -37,7 +37,7 @@ If you just want to use the Kubric-NK samples to evaluate a model, you can downl
 
 ### Online servers:
 
-Google Drive: https://drive.google.com/drive/folders/1vSShkqyYwLJYX38iJP3kg6x-DMpCn0R6?usp=sharing
+HuggingFace: https://huggingface.co/datasets/hmorimitsu/kubric-nk
 
 Baidu Cloud: https://pan.baidu.com/s/1sR_uX-yTMXORfLf_FU4opQ (password: `kbnk`)
 
